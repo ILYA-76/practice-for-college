@@ -56,19 +56,6 @@ class BrainOfBot:
                 "Где узнаем погоду?",
                 reply_markup=Keyboard().keyBoardToMain()
             )
-        elif data == "news":
-            self.news(update)
-
-
-        elif data == "backToMain":
-            self.dicOfState[userId] = "main"
-            self.missTake = 0
-            update.effective_message.reply_text(
-                "Погода? Новости? У меня есть и то и другое!",
-                reply_markup=Keyboard().keyBoardMain()
-
-            )
-
 
         elif data == "now":
             query.edit_message_text(
