@@ -3,7 +3,7 @@ from datetime import datetime
 
 from telegram import Bot
 from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import CallbackContext, CommandHandler
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import Filters
 from telegram.ext import MessageHandler
@@ -19,6 +19,11 @@ class BrainOfBot:
         self.dicOfState = {}
         self.missTake = 0
 
+    def start(self, update: Update, context: CallbackContext, ):
+        update.message.reply_text(
+            text="Погода?!\n",
+            reply_markup=Keyboard().keyBoardMain(),
+        )
     def do_echo(self, update: Update, context: CallbackContext, ):
         userId = update.effective_user.id
         if self.dicOfState[userId] == "weather":
@@ -39,7 +44,7 @@ class BrainOfBot:
             else:
                 if self.missTake == 0:
                     update.message.reply_photo(
-                        caption="ПОПРОБУЙ ЕЩЕ РАЗ",
+                        caption="Повтори!",
                         reply_markup=Keyboard().keyBoardToMain(),
                     )
 
@@ -53,13 +58,13 @@ class BrainOfBot:
         if data == "weather":
             self.dicOfState[userId] = "weather"
             update.effective_message.reply_text(
-                "Где узнаем погоду?",
+                "Город?",
                 reply_markup=Keyboard().keyBoardToMain()
             )
 
         elif data == "now":
             query.edit_message_text(
-                f"Сегодня в вашем городе {self.data[0]['temp']['day']}℃\n"
+                f"Сегодня  {self.data[0]['temp']['day']}℃\n"
                 "\n"
                 f"Днем {self.data[0]['temp']['day']}\n"
                 f"Ночью {self.data[0]['temp']['night']}℃\n"
@@ -70,7 +75,7 @@ class BrainOfBot:
             )
         elif data == "tomorrow":
             query.edit_message_text(
-                f"Завтра в вашем городе {self.data[1]['temp']['day']}℃\n"
+                f"Завтра  {self.data[1]['temp']['day']}℃\n"
                 "\n"
                 f"Днем {self.data[1]['temp']['day']}\n"
                 f"Ночью {self.data[1]['temp']['night']}℃\n"
@@ -103,12 +108,12 @@ class BrainOfBot:
 
 
     def main(self, ):
-        print("Поехали")
+        print("Старт")
 
         updater = Updater(
             token='5052499066:AAFtuqIs70e2Ie8osqT-J6yDlJJd-Stl3xI',
         )
-
+        updater.dispatcher.add_handler(CommandHandler("start", filters=Filters.text, callback=self.start))
         updater.dispatcher.add_handler(MessageHandler(filters=Filters.text, callback=self.do_echo))
         updater.dispatcher.add_handler(CallbackQueryHandler(callback=self.keyboardHendler))
         updater.dispatcher.add_handler(MessageHandler(filters=Filters.sticker, callback=self.do_echo))
