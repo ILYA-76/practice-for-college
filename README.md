@@ -1,1 +1,1 @@
-# practice-for-college
+Илья Семченков ИП-18-3
